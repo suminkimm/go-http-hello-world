@@ -1,9 +1,11 @@
 FROM golang:1.23 AS builder
 
 WORKDIR /build
-COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+
+# Copy the source code into the container
 COPY . .
+
+# Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o app-binary
 
 FROM gcr.io/distroless/static-debian12
