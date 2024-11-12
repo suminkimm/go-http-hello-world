@@ -1,82 +1,86 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-http-hello-world
+  creationTimestamp: null
   labels:
     app.kubernetes.io/name: go-http-hello-world
     kubernetes.azure.com/generator: draft
+  name: go-http-hello-world
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: go-http-hello-world
+  strategy: {}
   template:
     metadata:
+      creationTimestamp: null
       labels:
         app.kubernetes.io/name: go-http-hello-world
     spec:
-      containers:
-        - name: go-http-hello-world
-          image: go-http-hello-world:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 80
-          resources:
-            requests:
-              cpu: "1"
-              memory: "512Mi"
-            limits:
-              cpu: "2"
-              memory: "1Gi"
-          envFrom:
-            - configMapRef:
-                name: go-http-hello-world-config
-          livenessProbe:
-            tcpSocket:
-              port: 80
-          readinessProbe:
-            tcpSocket:
-              port: 80
-            periodSeconds: 5
-            timeoutSeconds: 5
-            failureThreshold: 1
-            successThreshold: 1
-            initialDelaySeconds: 3
-          securityContext:
-            seccompProfile:
-              type: RuntimeDefault
-            capabilities:
-              drop:
-                - ALL
-              add:
-                - SETPCAP
-                - MKNOD
-                - AUDIT_WRITE
-                - CHOWN
-                - DAC_OVERRIDE
-                - FOWNER
-                - FSETID
-                - KILL
-                - SETGID
-                - SETUID
-                - NET_BIND_SERVICE
-                - SYS_CHROOT
-                - SETFCAP
-                - SYS_PTRACE
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
+          - podAffinityTerm:
               labelSelector:
                 matchLabels:
                   app.kubernetes.io/name: go-http-hello-world
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: go-http-hello-world-config
+        image: stumpaudra.azurecr.io/go-http-hello-world
+        imagePullPolicy: Always
+        livenessProbe:
+          tcpSocket:
+            port: 80
+        name: go-http-hello-world
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          failureThreshold: 1
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          tcpSocket:
+            port: 80
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "2"
+            memory: 1Gi
+          requests:
+            cpu: "1"
+            memory: 512Mi
+        securityContext:
+          capabilities:
+            add:
+            - SETPCAP
+            - MKNOD
+            - AUDIT_WRITE
+            - CHOWN
+            - DAC_OVERRIDE
+            - FOWNER
+            - FSETID
+            - KILL
+            - SETGID
+            - SETUID
+            - NET_BIND_SERVICE
+            - SYS_CHROOT
+            - SETFCAP
+            - SYS_PTRACE
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
       topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: go-http-hello-world
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: go-http-hello-world
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+status: {}
