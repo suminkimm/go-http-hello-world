@@ -41,8 +41,8 @@ env:
   ACR_RESOURCE_GROUP: workflowtesting-stumpaudra
   AZURE_CONTAINER_REGISTRY: stumpaudra
   CONTAINER_NAME: go-http-hello-world
-  CLUSTER_RESOURCE_GROUP: workflowtesting-stumpaudra
-  CLUSTER_NAME: stumpaudracluster
+  CLUSTER_RESOURCE_GROUP: FL_workflowtesting-stumpaudra_test-fleet-workflow_centralus
+  CLUSTER_NAME: hub
   DEPLOYMENT_MANIFEST_PATH: ./manifests
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: .
