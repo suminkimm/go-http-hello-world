@@ -102,8 +102,8 @@ jobs:
         if: env.FLEET == 'yes'
         run: |
           az fleet get-credentials -g ${{ env.CLUSTER_RESOURCE_GROUP }} -n ${{ env.FLEET_NAME }}
-          export KUBECONFIG=${{ env.RUNNER_TEMP }}/kubeconfig
-          echo "KUBECONFIG=${{ env.RUNNER_TEMP }}/kubeconfig" >> $GITHUB_ENV
+          export KUBECONFIG=/home/runner/.kube/config
+          echo "KUBECONFIG=/home/runner/.kube/config" >> $GITHUB_ENV
 
       # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
       - name: Get K8s context
