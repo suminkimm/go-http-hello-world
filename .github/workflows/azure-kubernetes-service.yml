@@ -140,7 +140,18 @@ jobs:
       - name: Deploys fleet application
         if: env.FLEET == 'yes'
         run: |
-          /usr/bin/kubectl apply --validate=false -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
+          - name: Set up kubelogin for non-interactive login
+        uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: 'v0.0.25'
+
+      - name: Verify Kubernetes context
+        run: |
+          kubectl config current-context
+
+      - name: Apply Kubernetes configurations
+        run: |
+          /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
           
           
 
