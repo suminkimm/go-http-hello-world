@@ -41,7 +41,7 @@ env:
   ACR_RESOURCE_GROUP: workflowtesting-stumpaudra
   AZURE_CONTAINER_REGISTRY: stumpaudra
   CONTAINER_NAME: go-http-hello-world
-  CLUSTER_RESOURCE_GROUP: FL_workflowtesting-stumpaudra_test-fleet-workflow_centralus
+  CLUSTER_RESOURCE_GROUP: workflowtesting-stumpaudra
   CLUSTER_NAME: hub
   DEPLOYMENT_MANIFEST_PATH: ./manifests
   DOCKER_FILE: ./Dockerfile
@@ -49,6 +49,7 @@ env:
   NAMESPACE: default
   FLEET: yes
   FLEET_NAME: test-fleet-workflow
+  FLEET_RESOURCE_GROUP: FL_workflowtesting-stumpaudra_test-fleet-workflow_centralus
 
 jobs:
   buildImage:
@@ -100,7 +101,7 @@ jobs:
       - name: Get fleet credentials
         if: env.FLEET == 'yes'
         run: |
-          az fleet get-credentials -g "workflowtesting-stumpaudra" -n ${{ env.FLEET_NAME }}
+          az fleet get-credentials -g ${{ env.CLUSTER_RESOURCE_GROUP }} -n ${{ env.FLEET_NAME }}
 
       # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
       - name: Get K8s context
