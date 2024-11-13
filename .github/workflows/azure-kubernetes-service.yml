@@ -30,7 +30,7 @@
 # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
 # For more options with the actions used below please refer to https://github.com/Azure/login
 
-name: hw
+name: wf
 
 on:
   push:
@@ -47,6 +47,7 @@ env:
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: .
   NAMESPACE: default
+  FLEET: yes
 
 jobs:
   buildImage:
@@ -94,9 +95,15 @@ jobs:
         uses: azure/use-kubelogin@v1
         with:
           kubelogin-version: 'v0.0.25'
+      # Retrieves fleet credentials
+      - name: Get fleet credentials
+        if: env.FLEET == 'yes'
+        run: |
+          az fleet get-credentials -g ${{ env.CLUSTER_RESOURCE_GROUP }} -n ${{ env.CLUSTER_NAME }}
 
       # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
       - name: Get K8s context
+        if: env.FLEET != 'yes'
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
