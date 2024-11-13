@@ -1,14 +1,19 @@
-# Use the official Golang image as the builder
 FROM golang:1.23 AS builder
 
 # Set the working directory inside the container
 WORKDIR /build
 
-# Copy the source code into the container
-COPY hello_world/ .
+# Copy the go.mod and go.sum files first
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy the rest of the source code
+COPY hello_world/ ./hello_world/
 
 # Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o app-binary
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o app-binary ./hello_world
 
 # Use the distroless image for the final stage
 FROM gcr.io/distroless/static-debian12
