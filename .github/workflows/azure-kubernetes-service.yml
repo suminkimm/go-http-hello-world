@@ -123,6 +123,7 @@ jobs:
 
       # Deploys application based on given manifest  file
       - name: Deploys application
+        if: env.FLEET != 'yes'
         uses: Azure/k8s-deploy@v4
         with:
           action: deploy
@@ -133,3 +134,12 @@ jobs:
           name: ${{ env.CLUSTER_NAME }}
           private-cluster: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' }}
           namespace: ${{ env.NAMESPACE }}
+      # Deploys application based on given manifest  file for fleet
+      - name: Deploys fleet application
+        if: env.FLEET == 'yes'
+        run: |
+          /usr/bin/kubectl apply -f /tmp/configmap.yaml,/tmp/deployment.yaml,/tmp/service.yaml --namespace default
+          
+
+    
+      
