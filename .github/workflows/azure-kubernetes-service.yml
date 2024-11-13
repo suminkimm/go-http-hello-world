@@ -140,7 +140,7 @@ jobs:
       - name: Deploys fleet application
         if: env.FLEET == 'yes'
         run: |
-          /usr/bin/kubectl apply -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
+          /usr/bin/kubectl apply --validate=false -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
           
           
 
