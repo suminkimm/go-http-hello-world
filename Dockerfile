@@ -1,18 +1,29 @@
+# Use the official Golang image as the builder
 FROM golang:1.23 AS builder
 
+# Set the working directory inside the container
 WORKDIR /build
 
 # Copy the source code into the container
-COPY . .
+COPY hello_world/ .
 
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o app-binary
 
+# Use the distroless image for the final stage
 FROM gcr.io/distroless/static-debian12
 
+# Set environment variables
 ENV PORT=80
+
+# Expose the port
 EXPOSE 80
 
+# Set the working directory inside the container
 WORKDIR /app
-COPY --from=builder /build/app-binary . 
+
+# Copy the built binary from the builder stage
+COPY --from=builder /build/app-binary .
+
+# Command to run the application
 CMD ["/app/app-binary"]
