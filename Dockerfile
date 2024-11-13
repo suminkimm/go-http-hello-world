@@ -1,10 +1,11 @@
+# Use the official Golang image as the builder
 FROM golang:1.23 AS builder
 
 # Set the working directory inside the container
 WORKDIR /build
 
-# Copy the go.mod and go.sum files first
-COPY go.mod go.sum ./
+# Copy the go.mod file first
+COPY go.mod ./
 
 # Download dependencies
 RUN go mod download
