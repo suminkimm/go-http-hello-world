@@ -100,7 +100,7 @@ jobs:
       - name: Get fleet credentials
         if: env.FLEET == 'yes'
         run: |
-          az fleet get-credentials -g ${{ env.CLUSTER_RESOURCE_GROUP }} -n ${{ env.FLEET_NAME }}
+          az fleet get-credentials -g "workflowtesting-stumpaudra" -n ${{ env.FLEET_NAME }}
 
       # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
       - name: Get K8s context
