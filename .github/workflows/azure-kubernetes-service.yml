@@ -47,102 +47,101 @@ env:
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: .
   NAMESPACE: default
-  FLEET: yes
-  FLEET_NAME: test-fleet-workflow
+  FLEET: true
+  FLEET_NAME: { { .Config.GetVariableValue "FLEET_NAME" } }
 
-jobs:
-  buildImage:
-    permissions:
-      contents: read
-      id-token: write
-    runs-on: ubuntu-latest
-    steps:
-      # Checks out the repository this file is in
-      - uses: actions/checkout@v3
+  {{`
+  jobs:
+    buildImage:
+      permissions:
+        contents: read
+        id-token: write
+      runs-on: ubuntu-latest
+      steps:
+        # Checks out the repository this file is in
+        - uses: actions/checkout@v3
 
-      # Logs in with your Azure credentials
-      - name: Azure login
-        uses: azure/login@v1.4.6
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        # Logs in with your Azure credentials
+        - name: Azure login
+          uses: azure/login@v1.4.6
+          with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Builds and pushes an image up to your Azure Container Registry
-      - name: Build and push image to ACR
-        run: |
-          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ${{ env.DOCKER_FILE }} ${{ env.BUILD_CONTEXT_PATH }}
-  deploy:
-    permissions:
-      actions: read
-      contents: read
-      id-token: write
-    runs-on: ubuntu-latest
-    needs: [buildImage]
-    steps:
-      # Checks out the repository this file is in
-      - uses: actions/checkout@v3
+        # Builds and pushes an image up to your Azure Container Registry
+        - name: Build and push image to ACR
+          run: |
+            az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ${{ env.DOCKER_FILE }} ${{ env.BUILD_CONTEXT_PATH }}
+    deploy:
+      permissions:
+        actions: read
+        contents: read
+        id-token: write
+      runs-on: ubuntu-latest
+      needs: [buildImage]
+      steps:
+        # Checks out the repository this file is in
+        - uses: actions/checkout@v3
 
-      # Logs in with your Azure credentials
-      - name: Azure login
-        uses: azure/login@v1.4.6
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        # Logs in with your Azure credentials
+        - name: Azure login
+          uses: azure/login@v1.4.6
+          with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Use kubelogin to configure your kubeconfig for Azure auth
-      - name: Set up kubelogin for non-interactive login
-        uses: azure/use-kubelogin@v1
-        with:
-          kubelogin-version: 'v0.0.25'
-      # Retrieves fleet credentials
-      - name: Get fleet credentials
-        if: env.FLEET == 'yes'
-        run: |
-          az fleet get-credentials -g ${{ env.CLUSTER_RESOURCE_GROUP }} -n ${{ env.FLEET_NAME }}
-          export KUBECONFIG=/home/runner/.kube/config
-          echo "KUBECONFIG=/home/runner/.kube/config" >> $GITHUB_ENV
+        # Use kubelogin to configure your kubeconfig for Azure auth
+        - name: Set up kubelogin for non-interactive login
+          uses: azure/use-kubelogin@v1
+          with:
+            kubelogin-version: 'v0.0.25'
 
-      # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
-      - name: Get K8s context
-        if: env.FLEET != 'yes'
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-          admin: 'false'
-          use-kubelogin: 'true'
+        # Retrieves fleet credentials
+        - name: Get fleet credentials
+          if: env.FLEET == 'true'
+          run: |
+            az fleet get-credentials -g ${{ env.CLUSTER_RESOURCE_GROUP }} -n ${{ env.FLEET_NAME }}
+            export KUBECONFIG=/home/runner/.kube/config
+            echo "KUBECONFIG=/home/runner/.kube/config" >> $GITHUB_ENV
 
-      # Checks if the AKS cluster is private
-      - name: Is private cluster
-        if: env.FLEET != 'yes'
-        id: isPrivate
-        run: |
-          result=$(az aks show --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --query "apiServerAccessProfile.enablePrivateCluster")
-          echo "PRIVATE_CLUSTER=$result" >> "$GITHUB_OUTPUT"
+        # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
+        - name: Get K8s context
+          if: env.FLEET != 'true'
+          uses: azure/aks-set-context@v3
+          with:
+            resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+            cluster-name: ${{ env.CLUSTER_NAME }}
+            admin: 'false'
+            use-kubelogin: 'true'
 
-      # Deploys application based on given manifest  file
-      - name: Deploys application
-        if: env.FLEET != 'yes'
-        uses: Azure/k8s-deploy@v4
-        with:
-          action: deploy
-          manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
-          images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
-          resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
-          name: ${{ env.CLUSTER_NAME }}
-          private-cluster: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' }}
-          namespace: ${{ env.NAMESPACE }}
-      # Deploys application based on given manifest  file for fleet
-      - name: Deploys fleet application
-        if: env.FLEET == 'yes'
-        run: |
-          kubectl config current-context
-          /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
-          
-          
+        # Checks if the AKS cluster is private
+        - name: Is private cluster
+          if: env.FLEET != 'true'
+          id: isPrivate
+          run: |
+            result=$(az aks show --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --query "apiServerAccessProfile.enablePrivateCluster")
+            echo "PRIVATE_CLUSTER=$result" >> "$GITHUB_OUTPUT"
 
-    
-      
+        # Deploys application based on given manifest  file
+        - name: Deploys application
+          if: env.FLEET != 'true'
+          uses: Azure/k8s-deploy@v4
+          with:
+            action: deploy
+            manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
+            images: |
+              ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+            name: ${{ env.CLUSTER_NAME }}
+            private-cluster: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' }}
+            namespace: ${{ env.NAMESPACE }}
+
+        # Deploys application based on given manifest file for fleet
+        - name: Deploys fleet application
+          if: env.FLEET == 'true'
+          run: |
+            kubectl config current-context
+            /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
+  `}}
