@@ -49,7 +49,6 @@ env:
   NAMESPACE: default
   FLEET: yes
   FLEET_NAME: test-fleet-workflow
-  FLEET_RESOURCE_GROUP: FL_workflowtesting-stumpaudra_test-fleet-workflow_centralus
 
 jobs:
   buildImage:
