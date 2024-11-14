@@ -50,7 +50,7 @@ env:
   FLEET: true
   FLEET_NAME: { { .Config.GetVariableValue "FLEET_NAME" } }
 
-  {{`
+  
   jobs:
     buildImage:
       permissions:
@@ -144,4 +144,4 @@ env:
           run: |
             kubectl config current-context
             /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
-  `}}
+  
