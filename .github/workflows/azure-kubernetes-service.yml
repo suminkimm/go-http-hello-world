@@ -39,7 +39,7 @@ on:
 
 env:
   ACR_RESOURCE_GROUP: workflowRG
-  AZURE_CONTAINER_REGISTRY: workflowCR
+  AZURE_CONTAINER_REGISTRY: workflowcr
   CONTAINER_NAME: go-http-hello-world
   CLUSTER_RESOURCE_GROUP: workflowRG
   CLUSTER_NAME: hub
