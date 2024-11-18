@@ -30,24 +30,24 @@
 # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
 # For more options with the actions used below please refer to https://github.com/Azure/login
 
-name: wf3
+name: Build and deploy an app to AKS
 
 on:
   push:
-    branches: [master]
+    branches: [audrastump/go-http-hello-world]
   workflow_dispatch:
 
 env:
-  ACR_RESOURCE_GROUP: workflowtesting-stumpaudra
-  AZURE_CONTAINER_REGISTRY: stumpaudra
+  ACR_RESOURCE_GROUP: workflowRG
+  AZURE_CONTAINER_REGISTRY: workflowCR
   CONTAINER_NAME: go-http-hello-world
-  CLUSTER_RESOURCE_GROUP: workflowtesting-stumpaudra
+  CLUSTER_RESOURCE_GROUP: workflowRG
   CLUSTER_NAME: hub
   DEPLOYMENT_MANIFEST_PATH: ./manifests
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: .
   NAMESPACE: default
-  FLEET_NAME: test-fleet-workflow
+  FLEET_NAME: workflowfleet
 
 jobs:
   buildImage:

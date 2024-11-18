@@ -32,7 +32,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: go-http-hello-world-config
-        image: stumpaudra.azurecr.io/go-http-hello-world
+        image: workflowCR.azurecr.io/go-http-hello-world
         imagePullPolicy: Always
         livenessProbe:
           tcpSocket:
