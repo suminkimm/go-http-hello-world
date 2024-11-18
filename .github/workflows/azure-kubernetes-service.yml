@@ -30,11 +30,11 @@
 # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
 # For more options with the actions used below please refer to https://github.com/Azure/login
 
-name: wf4
+name: workflow5
 
 on:
   push:
-    branches: [audrastump/go-http-hello-world]
+    branches: [master]
   workflow_dispatch:
 
 env:
