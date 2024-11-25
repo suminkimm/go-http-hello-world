@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: devhubApp
     kubernetes.azure.com/generator: devhub
-  namespace: test-namespace
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: devhubApp
-          image: test-image:latest
+          image: go-http-hello-world:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
