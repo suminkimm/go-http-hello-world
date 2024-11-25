@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: devhubApp-config
-  namespace: test-namespace
+  namespace: default
   labels:
     app.kubernetes.io/name: devhubApp
     kubernetes.azure.com/generator: devhub
