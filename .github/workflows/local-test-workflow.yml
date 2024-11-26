@@ -42,10 +42,7 @@ env:
   AZURE_CONTAINER_REGISTRY: testdevhubacr
   CONTAINER_NAME: devhub
   CLUSTER_RESOURCE_GROUP: fleetDevhubTest
-  DEPLOYMENT_MANIFEST_PATH: |
-    manifests/configmap.yaml
-    manifests/deployment.yaml
-    manifests/service.yaml
+  DEPLOYMENT_MANIFEST_PATH: ./manifests
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
   NAMESPACE: default
