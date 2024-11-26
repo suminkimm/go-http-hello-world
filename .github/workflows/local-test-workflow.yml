@@ -42,7 +42,10 @@ env:
   AZURE_CONTAINER_REGISTRY: testdevhubacr
   CONTAINER_NAME: devhub
   CLUSTER_RESOURCE_GROUP: fleetDevhubTest
-  DEPLOYMENT_MANIFEST_PATH: ./manifests
+  DEPLOYMENT_MANIFEST_PATH: |
+    manifests/configmap.yaml
+    manifests/deployment.yaml
+    manifests/service.yaml
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
   NAMESPACE: default
@@ -138,4 +141,5 @@ jobs:
         if: ${{ env.RESOURCE_TYPE == 'fleets' }}
         run: |
           kubectl config current-context
-          /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml,${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
+          pwd
+          /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/configmap.yaml -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/deployment.yaml -f ${{ env.DEPLOYMENT_MANIFEST_PATH }}/service.yaml --namespace ${{ env.NAMESPACE }}
