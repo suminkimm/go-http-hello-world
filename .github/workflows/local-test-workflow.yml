@@ -140,8 +140,7 @@ jobs:
       - name: Deploys fleet application
         if: ${{ env.RESOURCE_TYPE == 'fleets' }}
         run: |
-          - name: Deploys fleet application
-            kubectl config current-context
-            for manifest in ${{ env.DEPLOYMENT_MANIFEST_PATH }}; do
-              /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ./$manifest --namespace ${{ env.NAMESPACE }}
-            done
+          kubectl config current-context
+          for manifest in ${{ env.DEPLOYMENT_MANIFEST_PATH }}; do
+            /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ./$manifest --namespace ${{ env.NAMESPACE }}
+          done
