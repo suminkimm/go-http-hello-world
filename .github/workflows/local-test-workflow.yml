@@ -141,6 +141,6 @@ jobs:
         if: ${{ env.RESOURCE_TYPE == 'fleets' }}
         run: |
           kubectl config current-context
-          echo "${{ env.DEPLOYMENT_MANIFEST_PATH }}" | while read -r manifest; do
+          for manifest in $(echo "${{ env.DEPLOYMENT_MANIFEST_PATH }}" | tr '\n' ' '); do
             /usr/bin/kubectl apply --validate=false --request-timeout=60s -f ./$manifest --namespace ${{ env.NAMESPACE }}
           done
