@@ -1,0 +1,14 @@
+apiVersion: placement.kubernetes-fleet.io/v1
+kind: ClusterResourcePlacement
+metadata:
+  name: crp-fixed
+spec:
+  policy:
+    placementType: PickFixed
+    clusterNames:
+      - membercluster1
+  resourceSelectors:
+    - group: ""
+      kind: Namespace
+      name: test-deployment
+      version: v1
