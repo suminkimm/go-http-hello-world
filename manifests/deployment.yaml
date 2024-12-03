@@ -109,5 +109,5 @@ spec:
   resourceSelectors:
   - group: ""
     kind: Namespace
-    name: default
+    name: my-namespace
     version: v1
