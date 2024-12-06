@@ -112,7 +112,7 @@ jobs:
 
       # Checks if the AKS cluster is private
       - name: Is private cluster
-        if: ${{ env.RESOURCE_TYPE != 'fleets' }}
+        if: ${{ env.RESOURCE_TYPE != 'microsoft.containerservice/fleets' }}
         id: isPrivate
         run: |
           result=$(az aks show --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.RESOURCE_NAME }} --query "apiServerAccessProfile.enablePrivateCluster")
