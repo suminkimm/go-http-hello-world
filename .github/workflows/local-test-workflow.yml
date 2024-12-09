@@ -136,3 +136,4 @@ jobs:
           name: ${{ env.RESOURCE_NAME }}
           private-cluster: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' }}
           namespace: ${{ env.NAMESPACE }}
+          resource-type: ${{ env.RESOURCE_TYPE }}
