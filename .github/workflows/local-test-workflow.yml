@@ -49,7 +49,7 @@ env:
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
   NAMESPACE: default
-  RESOURCE_TYPE: microsoft.containerservice/fleets
+  RESOURCE_TYPE: Microsoft.ContainerService/fleets
   RESOURCE_NAME: fleet-devhub-test
 
 
