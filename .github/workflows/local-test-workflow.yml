@@ -41,7 +41,7 @@ env:
   ACR_RESOURCE_GROUP: testDevhubRG
   AZURE_CONTAINER_REGISTRY: testdevhubacr
   CONTAINER_NAME: devhub
-  CLUSTER_RESOURCE_GROUP: fleetDevhubTest
+  CLUSTER_RESOURCE_GROUP: testDevhubRG
   DEPLOYMENT_MANIFEST_PATH: |
     manifests/configmap.yaml
     manifests/deployment.yaml
