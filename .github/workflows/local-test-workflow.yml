@@ -120,7 +120,7 @@ jobs:
 
       # Deploys application based on given manifest  file
       - name: Deploys application
-        if: ${{ env.RESOURCE_TYPE != 'fleets' }}
+        if: ${{ env.RESOURCE_TYPE != 'microsoft.containerservice/fleets' }}
         uses: Azure/k8s-deploy@v4
         with:
           action: deploy
@@ -132,7 +132,7 @@ jobs:
           private-cluster: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' }}
           namespace: ${{ env.NAMESPACE }}
       - name: Deploys fleet application
-        if: ${{ env.RESOURCE_TYPE == 'fleets' }}
+        if: ${{ env.RESOURCE_TYPE == 'microsoft.containerservice/fleets' }}
         run: |
           kubectl config current-context
           for manifest in $(echo "${{ env.DEPLOYMENT_MANIFEST_PATH }}" | tr '\n' ' '); do
