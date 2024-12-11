@@ -43,10 +43,12 @@ env:
   CONTAINER_NAME: devhub
   CLUSTER_RESOURCE_GROUP: testDevhubRG
   DEPLOYMENT_MANIFEST_PATH: |
-    
+    manifests/configmap.yaml
+    manifests/deployment.yaml
+    manifests/service.yaml
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
-  NAMESPACE: namespace-workflow-1671053601031
+  NAMESPACE: default
   RESOURCE_TYPE: Microsoft.ContainerService/fleets
   RESOURCE_NAME: fleet-devhub-test
 
