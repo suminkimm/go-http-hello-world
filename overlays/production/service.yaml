@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: devhubtest
+  namespace: default
+  labels:
+    app.kubernetes.io/name: devhubtest
+    kubernetes.azure.com/generator: devhub
+spec:
+  type: LoadBalancer
