@@ -1,3 +1,24 @@
+Skip to content
+Navigation Menu
+audrastump
+go-http-hello-world
+
+Type / to search
+Code
+Pull requests
+1
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+local-test-workflow
+Update local-test-workflow.yml #65
+Jobs
+Run details
+Workflow file for this run
+.github/workflows/local-test-workflow.yml at c4094f6
 # This workflow will build and push an application to a Azure Kubernetes Service (AKS) cluster when you push your code
 #
 # This workflow assumes you have already created the target AKS cluster and have created an Azure Container Registry (ACR)
@@ -118,7 +139,6 @@ jobs:
         run: |
           result=$(az aks show --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --query "apiServerAccessProfile.enablePrivateCluster")
           echo "PRIVATE_CLUSTER=$result" >> "$GITHUB_OUTPUT"
-
       # Deploys application
       - name: Deploy application on private cluster
         if: steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true'
@@ -131,8 +151,8 @@ jobs:
           if [ $exitCode -ne 0 ]; then
             exit $exitCode
           fi
-
       - name: Deploy application on public cluster
         if: steps.isPrivate.outputs.PRIVATE_CLUSTER != 'true'
         run: helm upgrade -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }} --create-namespace
 
+Update local-test-workflow.yml · audrastump/go-http-hello-world@c4094f6 
