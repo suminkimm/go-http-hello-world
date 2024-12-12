@@ -52,6 +52,7 @@ env:
   CHART_OVERRIDE_PATH: charts/values.yaml
   CHART_OVERRIDES: image.repository=testdevhubacr.azurecr.io/devhub,image.tag=${{ github.sha }}
   NAMESPACE: default
+  RESOURCE_TYPE: Microsoft.ContainerService/fleets
 
 jobs:
   buildImage:
@@ -108,10 +109,12 @@ jobs:
           cluster-name: ${{ env.CLUSTER_NAME }}
           admin: "false"
           use-kubelogin: "true"
+          resource-type: ${{ env.RESOURCE_TYPE }}
 
       # Checks if the AKS cluster is private
       - name: Is private cluster
         id: isPrivate
+        if: ${{ env.RESOURCE_TYPE != 'Microsoft.ContainerService/fleets' }}
         run: |
           result=$(az aks show --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --query "apiServerAccessProfile.enablePrivateCluster")
           echo "PRIVATE_CLUSTER=$result" >> "$GITHUB_OUTPUT"
