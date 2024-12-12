@@ -51,6 +51,7 @@ env:
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
   NAMESPACE: default
+  RESOURCE_TYPE: Microsoft.ContainerService/fleets
 
 jobs:
   buildImage:
@@ -101,12 +102,13 @@ jobs:
 
       # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
       - name: Get K8s context
-        uses: azure/aks-set-context@v3
+        uses: azure/aks-set-context@v4.0.2
         with:
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
           cluster-name: ${{ env.CLUSTER_NAME }}
           admin: 'false'
           use-kubelogin: 'true'
+          resource-type: ${{ env.RESOURCE_TYPE }}
 
       # Runs Kustomize to create manifest files
       - name: Bake deployment
@@ -119,6 +121,7 @@ jobs:
       
       # Checks if the AKS cluster is private
       - name: Is private cluster
+        if: ${{ env.RESOURCE_TYPE != 'Microsoft.ContainerService/fleets' }}
         id: isPrivate
         run: |
           result=$(az aks show --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --query "apiServerAccessProfile.enablePrivateCluster")
@@ -126,7 +129,7 @@ jobs:
 
       # Deploys application based on manifest files from previous step
       - name: Deploy application
-        uses: Azure/k8s-deploy@v4
+        uses: Azure/k8s-deploy@v5.0.1
         with:
           action: deploy
           manifests: ${{ steps.bake.outputs.manifestsBundle }}
@@ -136,4 +139,4 @@ jobs:
           name: ${{ env.CLUSTER_NAME }}
           private-cluster: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' }}
           namespace: ${{ env.NAMESPACE }}
-
+          resource-type: ${{ env.RESOURCE_TYPE }}
