@@ -134,9 +134,6 @@ jobs:
         if: steps.isPrivate.outputs.PRIVATE_CLUSTER != 'true'
         run: |
           if [ "${{ env.RESOURCE_TYPE }}" == "Microsoft.ContainerService/fleets" ]; then
-            if ! kubectl get namespace ${{ env.NAMESPACE }}; then
-              kubectl create namespace ${{ env.NAMESPACE }};
-            fi
             helm upgrade -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }}
           else
             helm upgrade --wait -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }} --create-namespace
