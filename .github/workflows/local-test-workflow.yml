@@ -53,7 +53,7 @@ env:
   CHART_PATH: charts
   CHART_OVERRIDE_PATH: charts/values.yaml
   CHART_OVERRIDES: image.repository=testdevhubacr.azurecr.io/devhub,image.tag=${{ github.sha }}
-  NAMESPACE: default
+  NAMESPACE: testns
 
 jobs:
   buildImage:
