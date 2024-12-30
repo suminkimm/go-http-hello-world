@@ -47,7 +47,7 @@ env:
   CONTAINER_NAME: devhub
   CLUSTER_NAME: fleet-devhub-test
   CLUSTER_RESOURCE_GROUP: testDevhubRG
-  CLUSTER_RESOURCE_TYPE: Microsoft.ContainerService/Microsoft.ContainerService/fleets
+  CLUSTER_RESOURCE_TYPE: /Microsoft.ContainerService/fleets
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
   CHART_PATH: charts
