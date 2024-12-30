@@ -22,7 +22,7 @@
 #    - CONTAINER_NAME (name of the container image you would like to push up to your ACR)
 #    - CLUSTER_NAME (name of the resource to deploy to - fleet name or managed cluster name)
 #    - CLUSTER_RESOURCE_GROUP (where your cluster is deployed)
-#    - CLUSTER_RESOURCE_TYPE (type of resource to deploy to, either 'Microsoft.ContainerService/fleets' or 'Microsoft.ContainerService/managedCluster')
+#    - CLUSTER_RESOURCE_TYPE (type of resource to deploy to, either 'Microsoft.ContainerService/fleets' or 'Microsoft.ContainerService/managedClusters')
 #    - DOCKER_FILE (path to your Dockerfile)
 #    - BUILD_CONTEXT_PATH (path to the context of your Dockerfile)
 #    - CHART_PATH (path to your helm chart)
@@ -47,7 +47,7 @@ env:
   CONTAINER_NAME: devhub
   CLUSTER_NAME: fleet-devhub-test
   CLUSTER_RESOURCE_GROUP: testDevhubRG
-  CLUSTER_RESOURCE_TYPE: Microsoft.ContainerService/fleets
+  CLUSTER_RESOURCE_TYPE: Microsoft.ContainerService/Microsoft.ContainerService/fleets
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
   CHART_PATH: charts
@@ -104,7 +104,7 @@ jobs:
 
       # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
       - name: Get K8s context
-        uses: azure/aks-set-context@v4.0.2
+        uses: azure/aks-set-context@v4
         with:
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
           cluster-name: ${{ env.CLUSTER_NAME }}
@@ -134,11 +134,12 @@ jobs:
           fi
 
       - name: Deploy application on public cluster
-        if: steps.isPrivate.outputs.PRIVATE_CLUSTER != 'true'
+        if: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER != 'true' && env.CLUSTER_RESOURCE_TYPE != 'Microsoft.ContainerService/fleets' }}
         run: |
-          if [ "${{ env.CLUSTER_RESOURCE_TYPE }}" == "Microsoft.ContainerService/fleets" ]; then
-            helm upgrade -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }}
-          else
-            helm upgrade --wait -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }} --create-namespace
-          fi
+          helm upgrade --wait -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }} --create-namespace
+
+      - name: Deploy application on fleet hub cluster
+        if: ${{ env.CLUSTER_RESOURCE_TYPE == 'Microsoft.ContainerService/fleets' }}
+        run: |
+          helm upgrade -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }}
 
