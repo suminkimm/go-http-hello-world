@@ -48,7 +48,7 @@ env:
   CLUSTER_NAME: fleet-devhub-test
   CLUSTER_RESOURCE_GROUP: testDevhubRG
   CLUSTER_RESOURCE_TYPE: Microsoft.ContainerService/fleets
-  CREATE_NAMESPACE: true
+  CREATE_NAMESPACE: false
   DOCKER_FILE: ./Dockerfile
   BUILD_CONTEXT_PATH: ./
   CHART_PATH: charts
@@ -123,7 +123,7 @@ jobs:
 
       # Deploys application
       - name: Deploy application on private cluster with created namespace
-        if: ${{steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' && env.CREATE_NAMESPACE != 'false'}}
+        if: {{ steps.isPrivate.outputs.PRIVATE_CLUSTER == 'true' && env.CREATE_NAMESPACE != 'false'}}
         run: |
           command_id=$(az aks command invoke --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --command "helm upgrade --wait -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }} --create-namespace --timeout 240s" --file . --query id -o tsv)
           result=$(az aks command result --resource-group ${{ env.CLUSTER_RESOURCE_GROUP }} --name ${{ env.CLUSTER_NAME }} --command-id $command_id)
@@ -135,7 +135,7 @@ jobs:
           fi
 
       - name: Deploy application on public cluster with created namespace
-        if: ${{steps.isPrivate.outputs.PRIVATE_CLUSTER == 'false' && env.CREATE_NAMESPACE != 'false'}}
+        if: ${{ steps.isPrivate.outputs.PRIVATE_CLUSTER != 'true' && env.CREATE_NAMESPACE != 'false }}
         run: |
           helm upgrade --wait -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }} --create-namespace
 
