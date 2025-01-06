@@ -135,7 +135,7 @@ jobs:
           fi
 
       - name: Deploy application on public cluster with created namespace
-        if: ${{steps.isPrivate.outputs.PRIVATE_CLUSTER != 'true' && env.CREATE_NAMESPACE != 'false}}
+        if: ${{steps.isPrivate.outputs.PRIVATE_CLUSTER == 'false' && env.CREATE_NAMESPACE != 'false'}}
         run: |
           helm upgrade --wait -i -f ${{ env.CHART_OVERRIDE_PATH }} --set ${{ env.CHART_OVERRIDES }} --set image.tag=${{ github.sha }} automated-deployment ${{ env.CHART_PATH }} --namespace ${{ env.NAMESPACE }} --create-namespace
 
