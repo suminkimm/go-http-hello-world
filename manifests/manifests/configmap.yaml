@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gohttp-config
+  namespace: default
+  labels:
+    app.kubernetes.io/name: gohttp
+    kubernetes.azure.com/generator: devhub
+data:
