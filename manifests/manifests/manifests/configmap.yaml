@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: testgen-config
+  name: testgenagain-config
   namespace: default
   labels:
-    app.kubernetes.io/name: testgen
+    app.kubernetes.io/name: testgenagain
     kubernetes.azure.com/generator: devhub
 data:

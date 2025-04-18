@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: testgen
+  name: testgenagain
   namespace: default
   labels:
-    app.kubernetes.io/name: testgen
+    app.kubernetes.io/name: testgenagain
     kubernetes.azure.com/generator: devhub
 spec:
   type: LoadBalancer
   selector:
-    app.kubernetes.io/name: testgen
+    app.kubernetes.io/name: testgenagain
   ports:
     - protocol: TCP
       port: 80

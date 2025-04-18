@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: testgen
+  name: testgenagain
   labels:
-    app.kubernetes.io/name: testgen
+    app.kubernetes.io/name: testgenagain
     kubernetes.azure.com/generator: devhub
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: testgen
+      app.kubernetes.io/name: testgenagain
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: testgen
+        app.kubernetes.io/name: testgenagain
     spec:
       containers:
-        - name: testgen
+        - name: testgenagain
           image: skadacrv3.azurecr.io/samples/contoso-website:latest
           imagePullPolicy: Always
           ports:
@@ -31,7 +31,7 @@ spec:
               memory: "1Gi"
           envFrom:
             - configMapRef:
-                name: testgen-config
+                name: testgenagain-config
             - secretRef:
                 name: secret-ref
                 optional: true
@@ -83,11 +83,11 @@ spec:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  app.kubernetes.io/name: testgen
+                  app.kubernetes.io/name: testgenagain
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: testgen
+              app.kubernetes.io/name: testgenagain
